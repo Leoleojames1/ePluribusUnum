@@ -5,7 +5,8 @@ from pydantic import BaseModel
 from translate import Translator
 import ollama
 import speech_recognition as sr
-from TTS.api import TTS
+# Comment out TTS import since we're not using it
+# from TTS.api import TTS
 import tempfile
 import os
 from langdetect import detect
@@ -37,7 +38,8 @@ class TranslationRequest(BaseModel):
     target_lang: str
     source_lang: str = "auto"
     use_stt: bool = False
-    use_tts: bool = False
+    # Remove TTS option since we're not using it
+    # use_tts: bool = False
 
 @app.post("/api/translate")
 async def translate_text(request: TranslationRequest):
@@ -65,7 +67,7 @@ async def translate_text(request: TranslationRequest):
         # LLM translation
         try:
             ollama_response = ollama.chat(
-                model='mistral',  # Changed to mistral as it might be more commonly available
+                model='mistral',
                 messages=[{
                     'role': 'user',
                     'content': f"Translate this text from {request.source_lang} to {request.target_lang}: {request.text}"
@@ -85,27 +87,8 @@ async def translate_text(request: TranslationRequest):
             "llm_translation": llm_translation
         }
 
-        # Text-to-Speech
-        if request.use_tts:
-            try:
-                tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2", gpu=True)
-                audio_filename = f"translation_{os.urandom(8).hex()}.wav"
-                audio_path = os.path.join(AUDIO_DIR, audio_filename)
-                
-                tts.tts_to_file(
-                    text=llm_translation,
-                    file_path=audio_path,
-                    speaker="Ana Florence",
-                    language=request.target_lang,
-                    split_sentences=True
-                )
-                response["audioUrl"] = f"/audio/{audio_filename}"
-                logger.info("TTS conversion completed")
-            except Exception as e:
-                logger.error(f"TTS conversion failed: {str(e)}")
-                # Don't fail the whole request if TTS fails
-                response["tts_error"] = str(e)
-
+        # Remove TTS block since we're not using it
+        
         logger.info("Successfully completed translation request")
         return response
         

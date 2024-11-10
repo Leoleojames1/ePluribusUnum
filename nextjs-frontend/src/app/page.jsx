@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Paperclip, Mic, VolumeIcon } from 'lucide-react'
+import { Paperclip, Mic } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
@@ -28,9 +28,7 @@ export default function Home() {
   const [targetLang, setTargetLang] = useState('en')
   const [result, setResult] = useState(null)
   const [isRecording, setIsRecording] = useState(false)
-  const [isPlaying, setIsPlaying] = useState(false)
   const [useSTT, setUseSTT] = useState(false)
-  const [useTTS, setUseTTS] = useState(false)
   const [conversation, setConversation] = useState([])
   const [error, setError] = useState(null)
   const fileInputRef = useRef(null)
@@ -50,7 +48,12 @@ export default function Home() {
       const response = await fetch('/api/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, source_lang: sourceLang, target_lang: targetLang, use_stt: useSTT, use_tts: useTTS }),
+        body: JSON.stringify({ 
+          text, 
+          source_lang: sourceLang, 
+          target_lang: targetLang, 
+          use_stt: useSTT 
+        }),
       })
       if (!response.ok) {
         const errorText = await response.text()
@@ -59,12 +62,6 @@ export default function Home() {
       const data = await response.json()
       setResult(data)
       setConversation(prev => [...prev, { original: text, translation: data.llm_translation }])
-      if (useTTS && data.audioUrl) {
-        const audio = new Audio(data.audioUrl)
-        audio.play()
-        setIsPlaying(true)
-        audio.onended = () => setIsPlaying(false)
-      }
     } catch (error) {
       console.error('Translation failed:', error)
       setError(error.message)
@@ -183,18 +180,6 @@ export default function Home() {
                   <p className="text-foreground"><strong>Original ({result.source_lang}):</strong> {result.original}</p>
                   <p className="text-foreground"><strong>Traditional Translation ({result.target_lang}):</strong> {result.traditional_translation}</p>
                   <p className="text-foreground"><strong>LLM Translation ({result.target_lang}):</strong> {result.llm_translation}</p>
-                  {useTTS && result.audioUrl && (
-                    <Button 
-                      variant="outline"
-                      onClick={() => new Audio(result.audioUrl).play()} 
-                      disabled={isPlaying}
-                      className="bg-background hover:bg-accent"
-                      aria-label={isPlaying ? "Playing audio" : "Play translation audio"}
-                    >
-                      <VolumeIcon className="w-4 h-4 mr-2" />
-                      {isPlaying ? 'Playing...' : 'Play Translation'}
-                    </Button>
-                  )}
                 </div>
               )}
             </div>
@@ -224,15 +209,6 @@ export default function Home() {
                     className="data-[state=checked]:bg-primary"
                   />
                   <Label htmlFor="stt" className="text-foreground">Use Speech-to-Text</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch 
-                    id="tts" 
-                    checked={useTTS} 
-                    onCheckedChange={setUseTTS}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                  <Label htmlFor="tts" className="text-foreground">Use Text-to-Speech</Label>
                 </div>
               </div>
             </CardContent>
