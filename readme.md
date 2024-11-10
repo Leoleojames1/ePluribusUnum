@@ -1,4 +1,4 @@
-# ePluribusUnum: Universal Speech-to-Speech Translation Platform
+# ePluribusUnum: Universal Speech-to-Speech Translation Platform - 🦙 LLM POWERED BY LLAMA 🦙
 
 ## Overview
 ePluribusUnum is a comprehensive translation platform that enables seamless speech-to-speech and document-to-document translation, with a specific focus on Ukrainian to Dutch (and vice versa) translation. The platform combines traditional translation methods with advanced LLM capabilities to provide accurate and context-aware translations.
