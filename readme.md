@@ -29,7 +29,7 @@ ePluribusUnum is a comprehensive translation platform that enables seamless spee
 - Language Detection
 
 ## Prerequisites
-- Python 3.8+
+- Python 3.11+
 - Node.js 18+
 - Ollama with llama3.1 model
 - GPU support for TTS (optional but recommended)
